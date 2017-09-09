@@ -6,6 +6,9 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+AllCops:
+  TargetRubyVersion: 2.4
+
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: Include, TreatCommentsAsGroupSeparators.
@@ -27,7 +30,13 @@ Metrics/LineLength:
 # Offense count: 1
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
-  Max: 14
+  Max: 30
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
 
 # Offense count: 14
 Style/AsciiComments:

@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+# Pubsubhubbub
+class PubsubhubbubsController < ApplicationController
+  DATA_DIR     = '/path/to/jmx/data/'
+  VERIFY_TOKEN = 'hogehoge'
+
+  skip_before_action :verify_authenticity_token, only: [:create]
+
+  def show
+    # 各パラメータの取得
+    mode = params['hub.mode']
+
+    # hub.mode チェック
+    case mode
+    when 'subscribe', 'unsubscribe'
+      subscribe
+    else
+      logger.warn "[PUBSUBHUBBUB] Subscribe rejected by unknown mode #{mode}"
+      head :not_found
+    end
+  end
+
+  def create
+    # The X-Hub-Signature header's value MUST be in the form sha1=signature
+    # where signature is a 40-byte, hexadecimal representation of a SHA1 signature [RFC3174].
+    # The signature MUST be computed using the HMAC algorithm [RFC2104] with the request body
+    # as the data and the hub.secret as the key.
+    req_body = request.body.read
+    signature = request.env['HTTP_X_HUB_SIGNATURE']
+    sha1 = OpenSSL::HMAC.hexdigest(
+      OpenSSL::Digest::SHA1.new,
+      VERIFY_TOKEN,
+      req_body
+    )
+
+    if signature == sha1
+      logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
+      head :ok
+    else
+      logger.warn "[PUBSUBHUBBUB] Publish rejected by not matched SIGNATURE: #{signature}"
+      head :bad_request
+    end
+  end
+
+  private
+
+  def subscribe
+    mode = params['hub.mode']
+    topic = params['hub.topic']
+    challenge = params['hub.challenge']
+    verify_token = params['hub.verify_token']
+
+    if verify_token == VERIFY_TOKEN
+      logger.info "[PUBSUBHUBBUB] #{mode} succeeded topic: #{topic}"
+      render plain: challenge.chomp, status: 200
+    else
+      logger.warn "[PUBSUBHUBBUB] #{mode} failed by not matched VERIFY_TOKEN: #{verify_token}"
+      head :not_found
+    end
+  end
+end
