@@ -16,16 +16,12 @@ class PubsubhubbubsController < ApplicationController
     when 'subscribe', 'unsubscribe'
       subscribe
     else
-      logger.warn "[PUBSUBHUBBUB] Subscribe rejected by unknown mode #{mode}"
+      logger.warn "[PUBSUBHUBBUB] Subscribe rejected by unknown mode #{params.to_json}"
       head :not_found
     end
   end
 
   def create
-    # The X-Hub-Signature header's value MUST be in the form sha1=signature
-    # where signature is a 40-byte, hexadecimal representation of a SHA1 signature [RFC3174].
-    # The signature MUST be computed using the HMAC algorithm [RFC2104] with the request body
-    # as the data and the hub.secret as the key.
     req_body = request.body.read
     signature = request.env['HTTP_X_HUB_SIGNATURE']
     sha1 = OpenSSL::HMAC.hexdigest(
@@ -34,11 +30,12 @@ class PubsubhubbubsController < ApplicationController
       req_body
     )
 
-    if signature == sha1
+    if !signature || signature == sha1
       logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
       head :ok
     else
       logger.warn "[PUBSUBHUBBUB] Publish rejected by not matched SIGNATURE: #{signature}"
+      request.headers.sort.map { |k, v| logger.warn "HEADER: #{k}:#{v}" }
       head :bad_request
     end
   end

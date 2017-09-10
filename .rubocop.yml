@@ -19,7 +19,7 @@ Bundler/OrderedGems:
 
 # Offense count: 2
 Metrics/AbcSize:
-  Max: 20
+  Max: 30
 
 # Offense count: 23
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

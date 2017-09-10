@@ -64,5 +64,13 @@ RSpec.describe 'pubsubhubbub', type: :request do
         expect(response).to have_http_status(:bad_request)
       end
     end
+
+    context 'when not signature given' do
+      let(:headers) { {} }
+      it 'accept publishing' do
+        subject
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 end
