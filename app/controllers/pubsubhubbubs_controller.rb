@@ -2,9 +2,6 @@
 
 # Pubsubhubbub
 class PubsubhubbubsController < ApplicationController
-  DATA_DIR     = '/path/to/jmx/data/'
-  VERIFY_TOKEN = 'hogehoge'
-
   skip_before_action :verify_authenticity_token, only: [:create]
 
   def show
@@ -26,7 +23,7 @@ class PubsubhubbubsController < ApplicationController
     signature = request.env['HTTP_X_HUB_SIGNATURE']
     sha1 = OpenSSL::HMAC.hexdigest(
       OpenSSL::Digest::SHA1.new,
-      VERIFY_TOKEN,
+      ENV['VERIFY_TOKEN'],
       req_body
     )
 
@@ -49,7 +46,7 @@ class PubsubhubbubsController < ApplicationController
     challenge = params['hub.challenge']
     verify_token = params['hub.verify_token']
 
-    if verify_token == VERIFY_TOKEN
+    if verify_token == ENV['VERIFY_TOKEN']
       logger.info "[PUBSUBHUBBUB] #{mode} succeeded topic: #{topic}"
       render plain: challenge.chomp, status: 200
     else
