@@ -53,8 +53,9 @@ RSpec.describe 'pubsubhubbub', type: :request do
     end
 
     it 'receive publishing' do
-      subject
+      expect { subject }.to change { Publish.count }.from(0).to(1)
       expect(response).to have_http_status(:ok)
+      expect(Publish.first.content).to eq(content)
     end
 
     context 'when invalid token given' do

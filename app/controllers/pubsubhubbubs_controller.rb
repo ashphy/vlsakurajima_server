@@ -32,6 +32,7 @@ class PubsubhubbubsController < ApplicationController
 
     if !signature || signature == sha1
       logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
+      Publish.create(content: req_body)
       head :ok
     else
       logger.warn "[PUBSUBHUBBUB] Publish rejected by not matched SIGNATURE: #{signature}"
