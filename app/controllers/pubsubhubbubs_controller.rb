@@ -50,7 +50,7 @@ class PubsubhubbubsController < ApplicationController
       logger.info "[PUBSUBHUBBUB] #{mode} succeeded topic: #{topic}"
       render plain: challenge.chomp, status: 200
     else
-      logger.warn "[PUBSUBHUBBUB] #{mode} failed by not matched VERIFY_TOKEN: #{verify_token}"
+      logger.warn "[PUBSUBHUBBUB] #{mode} failed by not matched VERIFY_TOKEN: #{verify_token} to ENV: #{ENV['VERIFY_TOKEN']}"
       head :not_found
     end
   end
