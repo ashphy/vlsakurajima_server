@@ -7,7 +7,7 @@ class JobsController < ApplicationController
     client.mentions(options).each do |tweet|
       logger.info "[TWITTER] JOBS #{tweet.id}, #{tweet.text}, #{tweet.user.screen_name}, #{tweet.user.id}"
 
-      if tweet.text =~ /^@ashphy_dev[  ]add[  ](.+)/
+      if tweet.text =~ /^@vl_sakurajima[  ]add[  ](.+)/
         message_text = Regexp.last_match(1)
         message = Message.new(
           message: message_text,
