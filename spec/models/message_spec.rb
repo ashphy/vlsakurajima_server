@@ -2,13 +2,14 @@
 #
 # Table name: messages
 #
-#  id         :integer          not null, primary key
-#  message    :string
-#  user_name  :string
-#  user_id    :string
-#  count      :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :integer          not null, primary key
+#  message     :string
+#  tweet_id    :string
+#  screen_name :string
+#  user_id     :string
+#  count       :integer          default(0)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 require 'rails_helper'

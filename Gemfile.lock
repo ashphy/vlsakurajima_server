@@ -57,9 +57,6 @@ GEM
     buftok (0.2.0)
     builder (3.2.3)
     byebug (9.1.0)
-    clockwork (2.0.2)
-      activesupport
-      tzinfo
     coderay (1.1.2)
     coffee-rails (4.2.2)
       coffee-script (>= 2.2.0)
@@ -308,7 +305,6 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   byebug
-  clockwork
   coffee-rails (~> 4.2)
   devise
   dotenv-rails

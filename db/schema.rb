@@ -10,16 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170917045359) do
+ActiveRecord::Schema.define(version: 20170917080219) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "job_stats", force: :cascade do |t|
+    t.string "since_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "messages", force: :cascade do |t|
     t.string "message"
-    t.string "user_name"
+    t.string "tweet_id"
+    t.string "screen_name"
     t.string "user_id"
-    t.integer "count"
+    t.integer "count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
