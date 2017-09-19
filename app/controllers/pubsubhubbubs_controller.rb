@@ -27,15 +27,19 @@ class PubsubhubbubsController < ApplicationController
       req_body
     )
 
-    if !signature || signature == sha1
-      logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
-      Publish.create(content: req_body)
-      head :ok
-    else
-      logger.warn "[PUBSUBHUBBUB] Publish rejected by not matched SIGNATURE: #{signature}"
-      request.headers.sort.map { |k, v| logger.warn "HEADER: #{k}:#{v}" }
-      head :bad_request
-    end
+    # if !signature || signature == sha1
+    #   logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
+    #   Publish.create(content: req_body)
+    #   head :ok
+    # else
+    #   logger.warn "[PUBSUBHUBBUB] Publish rejected by not matched SIGNATURE: #{signature}"
+    #   request.headers.sort.map { |k, v| logger.warn "HEADER: #{k}:#{v}" }
+    #   head :bad_request
+    # end
+
+    logger.info "[PUBSUBHUBBUB] Published: #{req_body} with SIGNATURE: #{signature}"
+    Publish.create(content: req_body)
+    head :ok
   end
 
   private
