@@ -17,4 +17,10 @@ class Message < ApplicationRecord
   validates :message, length: { in: 1..80, message: 'メッセージは80文字以下にしてください' }
   validates :message, uniqueness: { message: '同じメッセージが既に登録されています' }
   validates :message, format: { with: /\A(?!.*爆発).+\z/, message: '「爆発」が含まれている発言は登録できません' }
+
+  def self.pick
+    selected_rank = minimum(:count)
+    candidates = where(count: selected_rank).pluck(:id)
+    find(candidates.sample)
+  end
 end

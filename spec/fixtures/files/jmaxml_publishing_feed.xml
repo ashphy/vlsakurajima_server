@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xml:lang='ja' xmlns='http://www.w3.org/2005/Atom'>
+  <title>JMAXML publishing feed</title>
+  <subtitle>this feed is published by JMA</subtitle>
+  <updated>2017-09-19T22:02:02+09:00</updated>
+  <id>urn:uuid:210d387f-7af7-3386-b7ec-c0dcce1f1448</id>
+  <link href='http://www.jma.go.jp/' rel='related'/>
+  <link href='http://xml.kishou.go.jp/feed/eqvol.xml' rel='self'/>
+  <link href='http://alert-hub.appspot.com/' rel='hub'/>
+  <rights>Published by Japan Meteorological Agency</rights>
+  <entry>
+    <title>噴火に関する火山観測報</title>
+    <id>urn:uuid:1e429370-86f8-3ae2-b287-dd08d26a482f</id>
+    <updated>2017-09-19T13:01:18Z</updated>
+    <author><name>福岡管区気象台　鹿児島地方気象台</name></author>
+    <link href='http://xml.kishou.go.jp/data/1e429370-86f8-3ae2-b287-dd08d26a482f.xml' type='application/xml'/>
+    <content type='text'>【火山名　桜島　噴火に関する火山観測報】火　　山：桜島
+      日　　時：2017年09月19日21時53分（191253UTC）
+      現　　象：噴火</content>
+  </entry>
+  <entry>
+    <title>噴火に関する火山観測報2</title>
+    <id>urn:uuid:2e429370-86f8-3ae2-b287-dd08d26a482f</id>
+    <updated>2017-09-20T13:01:18Z</updated>
+    <author><name>福岡管区気象台　鹿児島地方気象台</name></author>
+    <link href='http://xml.kishou.go.jp/data/1e429370-86f8-3ae2-b287-dd08d26a482f.xml' type='application/xml'/>
+    <content type='text'>【火山名　桜島　噴火に関する火山観測報】火　　山：桜島
+      日　　時：2017年09月20日21時53分（191253UTC）
+      現　　象：噴火</content>
+  </entry>
+</feed>

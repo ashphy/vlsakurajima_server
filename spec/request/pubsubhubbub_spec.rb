@@ -53,9 +53,8 @@ RSpec.describe 'pubsubhubbub', type: :request do
     end
 
     it 'receive publishing' do
-      expect { subject }.to change { Publish.count }.from(0).to(1)
+      subject
       expect(response).to have_http_status(:ok)
-      expect(Publish.first.content).to eq(content)
     end
 
     context 'when invalid token given' do
@@ -72,6 +71,50 @@ RSpec.describe 'pubsubhubbub', type: :request do
       it 'accept publishing' do
         subject
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'when jmx notification received' do
+      let(:uuid) { '1e429370-86f8-3ae2-b287-dd08d26a482f' }
+      let(:content) { file_fixture('jmaxml_publishing_feed.xml').read }
+      let(:entry) { file_fixture('43-46_02_03_101202_VFVO51.xml').read }
+      let(:expected_message) { "#{message.message} 流向:南東 噴火 2017年01月02日" }
+      let!(:message) { create(:message) }
+
+      before(:each) do
+        stub_request(
+          :get,
+          "http://xml.kishou.go.jp/data/#{uuid}.xml"
+        ).to_return(body: entry)
+      end
+
+      context 'and sakurajima volcano erupts' do
+        before(:each) do
+          stub_request(
+            :post,
+            'https://api.twitter.com/1.1/statuses/update.json'
+          ).with(
+            body: { status: expected_message }
+          ).to_return(
+            status: 200,
+            body: file_fixture('twitter_update_response.json').read
+          )
+        end
+
+        it 'accept publishing and tweet message' do
+          expect { subject }.to change { Entry.count }.from(0).to(1)
+          expect(Entry.first.uuid).to eq("urn:uuid:#{uuid}")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context 'and another volcano erupts' do
+        let(:entry) { file_fixture('43-46_01_07_101202_VFVO52.xml').read }
+
+        it 'accept publishing and not tweet' do
+          expect { subject }.to change { Entry.count }.from(0).to(1)
+          expect(response).to have_http_status(:ok)
+        end
       end
     end
   end

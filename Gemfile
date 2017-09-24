@@ -42,17 +42,17 @@ gem 'devise'
 gem 'awesome_print'
 
 gem 'twitter'
+gem 'faraday'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'rspec-rails', '~> 3.6'
   gem 'dotenv-rails'
-  gem 'better_errors'
-  gem 'binding_of_caller'
-  gem 'hirb'
-  gem 'hirb-unicode'
-  gem 'tapp'
+  gem 'webmock'
+  gem 'factory_girl_rails'
+  gem 'database_cleaner'
+  gem 'rails_best_practices'
 end
 
 group :development do
@@ -64,6 +64,11 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'annotate'
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'hirb'
+  gem 'hirb-unicode'
+  gem 'tapp'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

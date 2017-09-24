@@ -15,5 +15,14 @@
 require 'rails_helper'
 
 RSpec.describe Message, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe '#pick' do
+    context 'when the message registered' do
+      let!(:message1) { create(:message, count: 0) }
+      let!(:message2) { create(:message, count: 1) }
+
+      it 'picks from minimum count of messages' do
+        expect(Message.pick).to eq(message1)
+      end
+    end
+  end
 end
