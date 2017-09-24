@@ -3,6 +3,7 @@
 # Pubsubhubbub
 class PubsubhubbubsController < ApplicationController
   include TwitterAccessible
+  include SlackNotifiable
 
   skip_before_action :verify_authenticity_token, only: [:create]
 
@@ -15,7 +16,7 @@ class PubsubhubbubsController < ApplicationController
     when 'subscribe', 'unsubscribe'
       subscribe
     else
-      logger.warn "[PUBSUBHUBBUB] Subscribe rejected by unknown mode #{params.to_json}"
+      slack.ping "[PUBSUBHUBBUB] Subscribe rejected by unknown mode #{params.to_json}"
       head :not_found
     end
   end
@@ -28,6 +29,8 @@ class PubsubhubbubsController < ApplicationController
       ENV['VERIFY_TOKEN'],
       req_body
     )
+
+    slack.ping "[PUBSUBHUBBUB] Published: #{req_body} with SIGNATURE: #{signature}"
 
     # if !signature || signature == sha1
     #   logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
@@ -58,7 +61,6 @@ class PubsubhubbubsController < ApplicationController
       end
     end
 
-    logger.info "[PUBSUBHUBBUB] Published: #{req_body} with SIGNATURE: #{signature}"
     head :ok
   end
 
@@ -71,10 +73,14 @@ class PubsubhubbubsController < ApplicationController
     verify_token = params['hub.verify_token']
 
     if verify_token == ENV['VERIFY_TOKEN']
-      logger.info "[PUBSUBHUBBUB] #{mode} succeeded topic: #{topic}"
+      log = "[PUBSUBHUBBUB] #{mode} succeeded topic: #{topic}"
+      logger.info log
+      slack.ping log
       render plain: challenge.chomp, status: 200
     else
-      logger.warn "[PUBSUBHUBBUB] #{mode} failed by not matched VERIFY_TOKEN: #{verify_token} to ENV: #{ENV['VERIFY_TOKEN']}"
+      log = "[PUBSUBHUBBUB] #{mode} failed by not matched VERIFY_TOKEN: #{verify_token} to ENV: #{ENV['VERIFY_TOKEN']}"
+      logger.warn log
+      slack.ping log
       head :not_found
     end
   end
@@ -100,6 +106,8 @@ class PubsubhubbubsController < ApplicationController
   # 91	不明
   def process_publish(url)
     response = Faraday.get(url)
+    slack.ping "[ENTRY] Process #{url}, BODY: response.body"
+
     doc = REXML::Document.new(response.body)
     doc.get_elements('/Report/Body').each do |entry|
       volcano_code = entry.elements['VolcanoInfo/Item/Areas/Area/Code'].text
@@ -108,7 +116,9 @@ class PubsubhubbubsController < ApplicationController
       direction = entry.elements['VolcanoObservation/ColorPlume/jmx_eb:PlumeDirection'].text
 
       if volcano_code == SAKURAJIMA_VOLCANO_CODE
-       client.update(message(direction, event_date))
+        message = message(direction, event_date)
+        slack.ping message
+        twitter.update(message)
       end
     end
   end

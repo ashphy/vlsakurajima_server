@@ -6,7 +6,7 @@ class JobsController < ApplicationController
   def create
     options = {}
     options[:since_id] = stat.since_id if stat.since_id.present?
-    client.mentions(options).each do |tweet|
+    twitter.mentions(options).each do |tweet|
       logger.info "[TWITTER] JOBS #{tweet.id}, #{tweet.text}, #{tweet.user.screen_name}, #{tweet.user.id}"
 
       if tweet.text =~ /^@vl_sakurajima[  ]add[  ](.+)/
@@ -20,13 +20,13 @@ class JobsController < ApplicationController
 
         if message.save
           logger.info "[TWITTER] JOBS CREATE MESSAGE ##{message.id}"
-          client.create_direct_message(
+          twitter.create_direct_message(
             tweet.user,
             "メッセージ追加ありがとう！「#{message_text}」を追加したよ。"
           )
         else
           logger.info "[TWITTER] JOBS CREATE FAILED twitter_id: #{tweet.id}, error: #{message.errors[:message].join(' ')}"
-          client.create_direct_message(
+          twitter.create_direct_message(
             tweet.user,
             message.errors[:message].join(' ')
           )

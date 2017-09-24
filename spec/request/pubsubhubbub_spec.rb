@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'pubsubhubbub', type: :request do
+  before(:each) do
+    allow_any_instance_of(Slack::Notifier).to receive(:ping).and_return(nil)
+  end
+
   describe 'subscribe' do
     subject { get "/pubsubhubbub?#{params.to_query}" }
 
