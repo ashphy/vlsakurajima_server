@@ -30,7 +30,7 @@ class PubsubhubbubsController < ApplicationController
       req_body
     )
 
-    slack.ping "[PUBSUBHUBBUB] Published: #{req_body} with SIGNATURE: #{signature}"
+    slack.ping "[PUBSUBHUBBUB] Published: #{req_body.force_encoding('utf-8')} with SIGNATURE: #{signature}"
 
     # if !signature || signature == sha1
     #   logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
@@ -106,7 +106,7 @@ class PubsubhubbubsController < ApplicationController
   # 91	不明
   def process_publish(url)
     response = Faraday.get(url)
-    slack.ping "[ENTRY] Process #{url}, BODY: response.body"
+    slack.ping "[ENTRY] Process #{url}, BODY: #{response.body.force_encoding('utf-8')}"
 
     doc = REXML::Document.new(response.body)
     doc.get_elements('/Report/Body').each do |entry|
