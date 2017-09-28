@@ -88,6 +88,7 @@ class PubsubhubbubsController < ApplicationController
 
   SAKURAJIMA_VOLCANO_CODE = '506'.freeze
 
+  # Kind/Code
   # 51	爆発
   # 52	噴火
   # 53	噴火開始	平成26年12月から運用上使用しない
@@ -110,21 +111,27 @@ class PubsubhubbubsController < ApplicationController
     slack.ping "[ENTRY] Process #{url}, BODY: #{response.body.force_encoding('utf-8')}"
 
     doc = REXML::Document.new(response.body)
+
+    serial = doc.elements['/Report/Head/Serial'].text.to_i
+    return unless serial == 1
+
     doc.get_elements('/Report/Body').each do |entry|
       volcano_code = entry.elements['VolcanoInfo/Item/Areas/Area/Code'].text
       event_date = entry.elements['VolcanoInfo/Item/EventTime/EventDateTime'].text.to_date
-      # kind = entry.elements['VolcanoInfo/Item/Kind/Code'].text
-      direction = entry.elements['VolcanoObservation/ColorPlume/jmx_eb:PlumeDirection'].text
-
-      if volcano_code == SAKURAJIMA_VOLCANO_CODE
-        message = message(direction, event_date)
-        slack.ping message
-        twitter.update(message)
+      kind_code = entry.elements['VolcanoInfo/Item/Kind/Code'].text
+      kind = entry.elements['VolcanoInfo/Item/Kind/Name'].text
+      if kind_code == '51' || kind_code == '52'
+        direction = entry.elements['VolcanoObservation/ColorPlume/jmx_eb:PlumeDirection'].text
+        if volcano_code == SAKURAJIMA_VOLCANO_CODE
+          message = message(direction, kind, event_date)
+          slack.ping message
+          twitter.update(message)
+        end
       end
     end
   end
 
-  def message(direction, date)
-    "#{Message.pick.message} 流向:#{direction} 噴火 #{date.strftime('%Y年%m月%d日')}"
+  def message(direction, kind, date)
+    "#{Message.pick.message} 流向:#{direction} #{kind} #{date.strftime('%Y年%m月%d日')}"
   end
 end

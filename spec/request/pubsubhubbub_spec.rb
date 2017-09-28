@@ -82,7 +82,8 @@ RSpec.describe 'pubsubhubbub', type: :request do
       let(:uuid) { '1e429370-86f8-3ae2-b287-dd08d26a482f' }
       let(:content) { file_fixture('jmaxml_publishing_feed.xml').read }
       let(:entry) { file_fixture('43-46_02_03_101202_VFVO51.xml').read }
-      let(:expected_message) { "#{message.message} 流向:南東 噴火 2017年01月02日" }
+      let(:kind) { '噴火' }
+      let(:expected_message) { "#{message.message} 流向:南東 #{kind} 2017年01月02日" }
       let!(:message) { create(:message) }
 
       before(:each) do
@@ -110,10 +111,30 @@ RSpec.describe 'pubsubhubbub', type: :request do
           expect(Entry.first.uuid).to eq("urn:uuid:#{uuid}")
           expect(response).to have_http_status(:ok)
         end
+
+        context 'and it is explosion' do
+          let(:entry) { file_fixture('explosion.xml').read }
+          let(:kind) { '爆発' }
+
+          it 'accept publishing and tweet message' do
+            expect { subject }.to change { Entry.count }.from(0).to(1)
+            expect(Entry.first.uuid).to eq("urn:uuid:#{uuid}")
+            expect(response).to have_http_status(:ok)
+          end
+        end
       end
 
       context 'and another volcano erupts' do
         let(:entry) { file_fixture('43-46_01_07_101202_VFVO52.xml').read }
+
+        it 'accept publishing and not tweet' do
+          expect { subject }.to change { Entry.count }.from(0).to(1)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context 'and second eruption information received' do
+        let(:entry) { file_fixture('second_eruption.xml').read }
 
         it 'accept publishing and not tweet' do
           expect { subject }.to change { Entry.count }.from(0).to(1)
