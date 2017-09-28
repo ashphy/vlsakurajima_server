@@ -117,7 +117,7 @@ class PubsubhubbubsController < ApplicationController
 
     doc.get_elements('/Report/Body').each do |entry|
       volcano_code = entry.elements['VolcanoInfo/Item/Areas/Area/Code'].text
-      event_date = entry.elements['VolcanoInfo/Item/EventTime/EventDateTime'].text.to_date
+      event_date = entry.elements['VolcanoInfo/Item/EventTime/EventDateTime'].text.to_time
       kind_code = entry.elements['VolcanoInfo/Item/Kind/Code'].text
       kind = entry.elements['VolcanoInfo/Item/Kind/Name'].text
       if kind_code == '51' || kind_code == '52'
@@ -131,7 +131,7 @@ class PubsubhubbubsController < ApplicationController
     end
   end
 
-  def message(direction, kind, date)
-    "#{Message.pick.message} 流向:#{direction} #{kind} #{date.strftime('%Y年%m月%d日')}"
+  def message(direction, kind, datetime)
+    "#{Message.pick.message} 流向:#{direction} #{kind} #{datetime.strftime('%Y年%m月%d日%H時%M分')}"
   end
 end

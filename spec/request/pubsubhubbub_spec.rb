@@ -83,7 +83,7 @@ RSpec.describe 'pubsubhubbub', type: :request do
       let(:content) { file_fixture('jmaxml_publishing_feed.xml').read }
       let(:entry) { file_fixture('43-46_02_03_101202_VFVO51.xml').read }
       let(:kind) { '噴火' }
-      let(:expected_message) { "#{message.message} 流向:南東 #{kind} 2017年01月02日" }
+      let(:expected_message) { "#{message.message} 流向:南東 #{kind} 2017年01月02日20時34分" }
       let!(:message) { create(:message) }
 
       before(:each) do
