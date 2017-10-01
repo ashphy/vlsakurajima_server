@@ -123,15 +123,19 @@ class PubsubhubbubsController < ApplicationController
       if kind_code == '51' || kind_code == '52'
         direction = entry.elements['VolcanoObservation/ColorPlume/jmx_eb:PlumeDirection'].text
         if volcano_code == SAKURAJIMA_VOLCANO_CODE
-          message = message(direction, kind, event_date)
-          slack.ping message
-          twitter.update(message)
+          Message.transaction do
+            message = message(direction, kind, event_date)
+            twitter.update(message)
+            slack.ping message
+          end
         end
       end
     end
   end
 
   def message(direction, kind, datetime)
-    "#{Message.pick.message} 流向:#{direction} #{kind} #{datetime.strftime('%Y年%m月%d日%H時%M分')}"
+    picked_message = Message.pick
+    picked_message.increment!(:count)
+    "#{picked_message.message} 流向:#{direction} #{kind} #{datetime.strftime('%Y年%m月%d日%H時%M分')}"
   end
 end

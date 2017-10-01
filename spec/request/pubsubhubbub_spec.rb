@@ -108,6 +108,7 @@ RSpec.describe 'pubsubhubbub', type: :request do
 
         it 'accept publishing and tweet message' do
           expect { subject }.to change { Entry.count }.from(0).to(1)
+          expect(message.reload.count).to eq(1)
           expect(Entry.first.uuid).to eq("urn:uuid:#{uuid}")
           expect(response).to have_http_status(:ok)
         end
