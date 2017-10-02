@@ -20,16 +20,24 @@ class JobsController < ApplicationController
 
         if message.save
           logger.info "[TWITTER] JOBS CREATE MESSAGE ##{message.id}"
-          twitter.create_direct_message(
-            tweet.user,
-            "メッセージ追加ありがとう！「#{message_text}」を追加したよ。"
-          )
+          begin
+            twitter.create_direct_message(
+              tweet.user,
+              "メッセージ追加ありがとう！「#{message_text}」を追加したよ。"
+            )
+          rescue Twitter::Error::Forbidden
+            logger.info "[TWITTER] You cannot send messages to users who are not following you #{tweet.user}"
+          end
         else
           logger.info "[TWITTER] JOBS CREATE FAILED twitter_id: #{tweet.id}, error: #{message.errors[:message].join(' ')}"
-          twitter.create_direct_message(
-            tweet.user,
-            message.errors[:message].join(' ')
-          )
+          begin
+            twitter.create_direct_message(
+              tweet.user,
+              message.errors[:message].join(' ')
+            )
+          rescue Twitter::Error::Forbidden
+            logger.info "[TWITTER] You cannot send messages to users who are not following you #{tweet.user}"
+          end
         end
 
         if stat.since_id.to_i < tweet.id.to_i
