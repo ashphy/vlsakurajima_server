@@ -4,6 +4,7 @@ require 'rexml/document'
 # Pubsubhubbub
 class PubsubhubbubsController < ApplicationController
   include TwitterAccessible
+  include MastodonAccessible
   include SlackNotifiable
 
   skip_before_action :verify_authenticity_token, only: [:create]
@@ -126,6 +127,7 @@ class PubsubhubbubsController < ApplicationController
           Message.transaction do
             message = message(direction, kind, event_date)
             twitter.update(message)
+            mastodon.create_status(message)
             slack.ping message
           end
         end

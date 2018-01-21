@@ -104,6 +104,20 @@ RSpec.describe 'pubsubhubbub', type: :request do
             status: 200,
             body: file_fixture('twitter_update_response.json').read
           )
+
+          stub_request(
+            :post,
+            'https://tegedon.net/api/v1/statuses'
+          ).with(
+            body: {
+              in_reply_to_id: nil,
+              status: expected_message
+            }
+          ).to_return(
+            status: 200,
+            body: file_fixture('mastodon_create_status_response.json').read,
+            headers: {'Content-Type' => 'application/json'}
+          )
         end
 
         it 'accept publishing and tweet message' do
