@@ -32,7 +32,8 @@ class PubsubhubbubsController < ApplicationController
       req_body
     )
 
-    slack.ping "[PUBSUBHUBBUB] Published: #{req_body.force_encoding('utf-8')} with SIGNATURE: #{signature}"
+    # Debug to show all publish entries
+    # slack.ping "[PUBSUBHUBBUB] Published: #{req_body.force_encoding('utf-8')} with SIGNATURE: #{signature}"
 
     # if !signature || signature == sha1
     #   logger.info "[PUBSUBHUBBUB] Published: #{req_body}"
